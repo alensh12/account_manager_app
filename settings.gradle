@@ -1,0 +1,2 @@
+rootProject.name = "acc_manager_test"
+include ':app'
