@@ -3,6 +3,7 @@ package com.example.acc_manager_test
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.accounts.AccountManagerCallback
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -25,19 +26,24 @@ class MainActivity : AppCompatActivity() {
 
     private val onLoginClickLister: View.OnClickListener = View.OnClickListener {
         val availableAccounts = mAccountManager!!.getAccountsByType("np.com.worldlink.worldlinkapp")
-        if (availableAccounts.size == 0) {
-            Toast.makeText(this, "No accounts", Toast.LENGTH_LONG).show();
-            mAccountManager?.addAccount(
-                "np.com.worldlink.worldlinkapp",
-                "Full access",
-                null,
-                null,
-                this,
-                AccountManagerCallback {
-                    Log.e("MANAGER APP", "CALLED BACK");
-                },
-                null
-            )
+        if (availableAccounts.isEmpty()) {
+            if (isAppInstalled("np.com.worldlink.worldlinkapp")) {
+                mAccountManager?.addAccount(
+                    "np.com.worldlink.worldlinkapp",
+                    "Full access",
+                    null,
+                    null,
+                    this,
+                    AccountManagerCallback {
+                        Log.e("MANAGER APP", "CALLED BACK");
+                        val bnd: Bundle = it.result
+                        Log.e("MANAGER APP", "ACCOUNT CREATED" + bnd);
+                    },
+                    null
+                )
+            } else {
+                Toast.makeText(this, "App not installed", Toast.LENGTH_LONG).show();
+            }
 //            mAccountManager?.addAccount()
         } else {
             val name = arrayOfNulls<String>(availableAccounts.size)
@@ -60,9 +66,25 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun isAppInstalled(packagename: String): Boolean {
+        val pm: PackageManager = packageManager
+        try {
+            pm.getPackageInfo(packagename, PackageManager.GET_ACTIVITIES)
+            return true
+        } catch (e: PackageManager.NameNotFoundException) {
+
+        }
+        return false
+    }
+
     private fun getExistingAccountAuthToken(account: Account?, authTokenType: String) {
-        val userData = mAccountManager?.getUserData(account, "token");
-        Log.e("myWorldlink", "USER DATA $userData");
+
+        account.let {
+            val token = mAccountManager?.getUserData(it, "token");
+            val accountType = mAccountManager?.getUserData(it, "account_type");
+            Log.e("myWorldlink", "USER DATA $token $accountType");
+        }
+
 //        val future = mAccountManager!!.getAuthToken(account, authTokenType, null, this, null, null)
 //
 //        Thread {
