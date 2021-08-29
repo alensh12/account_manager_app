@@ -151,6 +151,8 @@ class MainActivity : AppCompatActivity() {
                 resultLauncher.launch(accountChooserIntent)
             } else {
                 Toast.makeText(this, "App not installed", Toast.LENGTH_LONG).show();
+                startActivity(Intent(this, SecondaryLoginMenu::class.java))
+                finish()
             }
 
         }
