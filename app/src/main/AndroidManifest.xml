@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.acc_manager_test">
 
+    <queries>
+        <package android:name="np.com.worldlink.worldlinkapp" />
+    </queries>
+
+
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
